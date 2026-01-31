@@ -1,0 +1,981 @@
+<!doctype html>
+<html lang="fa">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../python5/fonts/Ray-Medium.woff2" />
+    <style>
+      @font-face {
+        font-family: "karim";
+        src: url(./fonts/Ray-Medium.woff2);
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        font-family: "karim";
+      }
+
+      body {
+        background: #000000 !important;
+        overflow-x: hidden;
+        position: relative;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        min-height: 100vh;
+      }
+
+      #matrix-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: #000000;
+        z-index: -1;
+        pointer-events: none;
+        overflow: hidden;
+      }
+
+      .matrix-stream {
+        position: absolute;
+        top: -100%;
+        color: #00ff00;
+        font-size: 16px;
+        font-weight: bold;
+        line-height: 1.2;
+        text-shadow:
+          0 0 7px #00ff00,
+          0 0 10px #00ff00,
+          0 0 21px #00ff00;
+        white-space: nowrap;
+        animation: matrixFall linear infinite;
+        opacity: 0.7;
+        font-family: "Courier New", "Monaco", monospace;
+        letter-spacing: 1px;
+      }
+
+      @keyframes matrixFall {
+        0% {
+          transform: translateY(-100%);
+          opacity: 0;
+        }
+        2% {
+          opacity: 1;
+        }
+        90% {
+          opacity: 0.5;
+        }
+        100% {
+          transform: translateY(100vh);
+          opacity: 0;
+        }
+      }
+
+      .exercises-container {
+        position: relative;
+        z-index: 10;
+        padding: 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(3px);
+        border-left: 2px solid #00ff00;
+        border-right: 2px solid #00ff00;
+        min-height: 100vh;
+        box-shadow: 0 0 50px rgba(0, 255, 0, 0.2);
+      }
+
+      .header {
+        text-align: center;
+        padding: 30px 0;
+        border-bottom: 2px solid #00ff00;
+        margin-bottom: 40px;
+      }
+
+      .header h1 {
+        color: #00ff00;
+        font-size: 8em;
+        margin-bottom: 15px;
+        text-shadow: 0 0 15px #00ff00;
+        font-family: "Courier New", monospace;
+        font-family: "karim";
+      }
+
+      .header p {
+        color: #90ff90;
+        font-size: 1.2em;
+        font-family: "karim";
+      }
+
+      .exercise-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 25px;
+        counter-reset: exercise-counter;
+      }
+
+      .exercise-card {
+        background: rgba(0, 20, 0, 0.8);
+        border: 1px solid #00ff00;
+        border-radius: 10px;
+        padding: 25px;
+        position: relative;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      }
+
+      .exercise-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 255, 0, 0.3);
+        border-color: #00cc00;
+      }
+
+      .exercise-card::before {
+        counter-increment: exercise-counter;
+        content: counter(exercise-counter);
+        position: absolute;
+        top: -15px;
+        left: 20px;
+        background: #000;
+        color: #00ff00;
+        font-size: 1.2em;
+        font-weight: bold;
+        padding: 5px 15px;
+        border: 2px solid #00ff00;
+        border-radius: 20px;
+        font-family: "Courier New", monospace;
+      }
+
+      .exercise-content {
+        color: #ffffff;
+        font-size: 1.1em;
+        line-height: 1.6;
+        margin-top: 10px;
+      }
+
+      .highlight-red {
+        color: #ff5555;
+        font-weight: bold;
+      }
+
+      .highlight-blue {
+        color: #5555ff;
+        font-weight: bold;
+      }
+
+      .highlight-yellow {
+        color: #ffff55;
+        font-weight: bold;
+      }
+
+      .highlight-green {
+        color: #55ff55;
+        font-weight: bold;
+      }
+
+      .code-sample {
+        background: rgba(0, 10, 0, 0.9);
+        border: 1px solid #008800;
+        border-radius: 5px;
+        padding: 15px;
+        margin-top: 15px;
+        font-family: "Courier New", monospace;
+        font-size: 0.9em;
+        color: #aaffaa;
+        overflow-x: auto;
+        white-space: pre-wrap;
+      }
+
+      .footer {
+        text-align: center;
+        padding: 40px 0 20px;
+        color: #90ff90;
+        font-size: 0.9em;
+        border-top: 1px solid #00ff00;
+        margin-top: 40px;
+      }
+
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: rgba(0, 20, 0, 0.5);
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: #00aa00;
+        border-radius: 5px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: #00ff00;
+      }
+
+      .page-indicator {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(0, 20, 0, 0.8);
+        color: #00ff00;
+        padding: 10px 20px;
+        border-radius: 20px;
+        border: 1px solid #00ff00;
+        font-family: "Courier New", monospace;
+        z-index: 100;
+      }
+      button,
+      button::after {
+        padding: 10px 50px;
+        font-size: 20px;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        background-color: transparent;
+        position: relative;
+      }
+
+      button::after {
+        --move1: inset(50% 50% 50% 50%);
+        --move2: inset(31% 0 40% 0);
+        --move3: inset(39% 0 15% 0);
+        --move4: inset(45% 0 40% 0);
+        --move5: inset(45% 0 6% 0);
+        --move6: inset(14% 0 61% 0);
+        clip-path: var(--move1);
+        content: "GLITCH";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: block;
+      }
+
+      button:hover::after {
+        animation: glitch_4011 1s;
+        text-shadow: 10 10px 10px black;
+        animation-timing-function: steps(2, end);
+        text-shadow:
+          -3px -3px 0px #1df2f0,
+          3px 3px 0px #e94be8;
+        background-color: transparent;
+        border: 3px solid rgb(0, 255, 213);
+      }
+      button>p{
+        opacity: 0;
+        transition: all linear 600;
+      }
+      button:hover>p{
+            
+            opacity: 100;
+      }
+      button:hover {
+        text-shadow:
+          -1px -1px 0px #1df2f0,
+          1px 1px 0px #e94be8;
+          
+      }
+
+      button:hover {
+        background-color: transparent;
+        border: 1px solid rgb(0, 255, 213);
+        box-shadow: 0px 10px 10px -10px rgb(0, 255, 213);
+      }
+
+      @keyframes glitch_4011 {
+        0% {
+          clip-path: var(--move1);
+          transform: translate(0px, -10px);
+        }
+
+        10% {
+          clip-path: var(--move2);
+          transform: translate(-10px, 10px);
+        }
+
+        20% {
+          clip-path: var(--move3);
+          transform: translate(10px, 0px);
+        }
+
+        30% {
+          clip-path: var(--move4);
+          transform: translate(-10px, 10px);
+        }
+
+        40% {
+          clip-path: var(--move5);
+          transform: translate(10px, -10px);
+        }
+
+        50% {
+          clip-path: var(--move6);
+          transform: translate(-10px, 10px);
+        }
+
+        60% {
+          clip-path: var(--move1);
+          transform: translate(10px, -10px);
+        }
+
+        70% {
+          clip-path: var(--move3);
+          transform: translate(-10px, 10px);
+        }
+
+        80% {
+          clip-path: var(--move2);
+          transform: translate(10px, -10px);
+        }
+
+        90% {
+          clip-path: var(--move4);
+          transform: translate(-10px, 10px);
+        }
+
+        100% {
+          clip-path: var(--move1);
+          transform: translate(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="matrix-container"></div>
+
+    <div class="exercises-container">
+      <div class="header">
+        <h1>تمرینات</h1>
+        <p style="font-family: karim">لیست ۵۹ تمرین</p>
+      </div>
+
+      <div class="exercise-list">
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">1- اعداد بخش‌پذیر بر ۵ و ۷:</span><br />
+            اعدادی که به <span class="highlight-green">پنج</span> و
+            <span class="highlight-green">هفت</span> بخش‌پذیر هستند و بین
+            <span class="highlight-yellow">1500</span> تا
+            <span class="highlight-yellow">2700</span> هستند.
+            <div class="code-sample"># مثال خروجی: 1505, 1540, 1575, ...</div>
+          </div>
+        </div>
+
+        <!-- تمرین 2 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">2- معکوس کردن رشته:</span><br />
+            هر <span class="highlight-blue">رشته‌ای</span> را برعکس می‌کند.
+            <div class="code-sample">
+              ورودی: "Hello World" خروجی: "dlroW olleH"
+            </div>
+          </div>
+        </div>
+
+        <!-- تمرین 3 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">3- بررسی حرف اول و آخر:</span><br />
+            اگر حرف اول با حرف آخر <span class="highlight-green">کلمه</span> یا
+            <span class="highlight-green">جمله</span>
+            یکی باشد.
+            <div class="code-sample">ورودی: "radar" خروجی: True</div>
+          </div>
+        </div>
+
+        <!-- تمرین 4 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">4- FizzBuzz:</span><br />
+            بین <span class="highlight-yellow">1 تا 50</span>:<br />
+            • بخش‌پذیر بر ۳: <span class="highlight-green">"fizz"</span><br />
+            • بخش‌پذیر بر ۵: <span class="highlight-green">"buzz"</span><br />
+            • بخش‌پذیر بر هر دو: <span class="highlight-green">"fizzbuzz"</span>
+          </div>
+        </div>
+
+        <!-- تمرین 5 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">5- شمارش حروف صدادار:</span><br />
+            جمله را بررسی می‌کند و تعداد
+            <span class="highlight-blue">حروف صدادار</span> را می‌شمارد.
+            <div class="code-sample">
+              ورودی: "Hello World" خروجی: 3 (e, o, o)
+            </div>
+          </div>
+        </div>
+
+        <!-- تمرین 6 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">6- تبدیل دما:</span><br />
+            اگر <span class="highlight-green">فارنهایت</span> بدیم،
+            <span class="highlight-green">سانتی‌گراد</span> برمی‌گرداند و برعکس.
+          </div>
+        </div>
+
+        <!-- تمرین 7 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">7- شمارش با حذف:</span><br />
+            از <span class="highlight-yellow">0 تا 6</span> می‌شمارد اما
+            <span class="highlight-red">3</span> و
+            <span class="highlight-red">6</span> را نمی‌خواند.
+            <div class="code-sample">خروجی: 0, 1, 2, 4, 5</div>
+          </div>
+        </div>
+
+        <!-- تمرین 8 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">8- دنباله فیبوناچی:</span><br />
+            تولید دنباله <span class="highlight-green">فیبوناچی</span> تا n امین
+            جمله.
+            <div class="code-sample">ورودی: 7 خروجی: 0, 1, 1, 2, 3, 5, 8</div>
+          </div>
+        </div>
+        <!--تمرین 9 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red"
+              >9-list1=[1,6,"y",87,"l",76,23,"o","u","w","p","r","o","v",94,7,"e"
+              ,i] </span
+            ><br />
+            <span class="highlight-yellow">
+               ابتدا لیست را با ترتیب ایندکس 1-، 4، 7، 13، 16، 2، 12 و 8 چاپ کنید. سپس، با کمک گرفتن از این دوروشی که در ادامه میگم کلمه رو در کنار خروجی قرار بده و پاسخ رو بخون ، می‌توانید از روش برعکس کردن طرح ماتریکس صفحه یا نگه داشتن روی دکمه‌ی آخر صفحه با عنوان  استفاده کنید </span
+            >.
+          </div>
+        </div>
+
+        <!-- تمرین 10 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">10- حدس عدد:</span><br />
+            حدس عدد بین <span class="highlight-yellow">1 تا 10</span>.
+          </div>
+        </div>
+
+        <!-- تمرین 11 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">11- شمارش حروف جمله:</span><br />
+            جمله‌ای بهش می‌دهیم، می‌گوید این جمله چندتا
+            <span class="highlight-blue">حرف</span> دارد (بدون فاصله).
+          </div>
+        </div>
+
+        <!-- تمرین 12 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">12- معکوس کردن کلمه:</span><br />
+            همان تمرین 2 اما برای کلمات.
+          </div>
+        </div>
+
+        <!-- تمرین 13 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">13- زوج و فرد:</span><br />
+            بین یک عدد، تعداد <span class="highlight-blue">اعداد زوج</span> و
+            <span class="highlight-blue">اعداد فرد</span> را می‌گوید.
+          </div>
+        </div>
+
+        <!-- تمرین 14 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">14- چاپ ستاره:</span><br />
+            الگوهای مختلف با <span class="highlight-yellow">ستاره</span> چاپ
+            می‌کند.
+            <div class="code-sample">* ** *** ****</div>
+          </div>
+        </div>
+
+        <!-- تمرین 15 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">15- تحلیل رشته:</span><br />
+            یک رشته می‌دهیم، می‌گوید چندتا:<br />
+            • فاصله<br />• حروف بزرگ<br />• حروف کوچک<br />• عدد<br />• کاراکتر
+            خاص
+          </div>
+        </div>
+
+        <!-- تمرین 16 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">16- حروف مشترک:</span><br />
+            <span class="highlight-blue">حروف مشترک</span> بین دو جمله را پیدا
+            می‌کند.
+          </div>
+        </div>
+
+        <!-- تمرین 17 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">17- شمارش حروف:</span><br />
+            تعداد تکرار هر حرف در یک جمله.
+          </div>
+        </div>
+
+        <!-- تمرین 18 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">18- جابجایی بزرگی/کوچکی:</span><br />
+            اگر حرف <span class="highlight-green">بزرگ</span> باشد،
+            <span class="highlight-green">کوچک</span> می‌شود و برعکس.
+          </div>
+        </div>
+
+        <!-- تمرین 19 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">19- شمارش "the":</span><br />
+            تعداد کلمه <span class="highlight-blue">"the"</span> در جمله را
+            می‌شمارد.
+          </div>
+        </div>
+
+        <!-- تمرین 20 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">20- لیست اعداد:</span><br />
+            <span class="highlight-yellow">10 عدد</span> از ورودی می‌گیرد به
+            عنوان لیست و چاپ می‌کند.
+          </div>
+        </div>
+
+        <!-- تمرین 21 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">21- حالت دیگر لیست:</span><br />
+            حالت دیگری از مسئله بالا.
+          </div>
+        </div>
+
+        <!-- تمرین 22 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">22- اعداد زوج:</span><br />
+            اعدادی را دریافت کند اگر
+            <span class="highlight-green">زوج</span> بود در یک لیست ذخیره شوند.
+          </div>
+        </div>
+
+        <!-- تمرین 23 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">23- بخش‌پذیر بر ۳ یا ۵:</span><br />
+            لیستی از ورودی بگیرد و بررسی کند ورودی‌ها بر اعداد
+            <span class="highlight-green">۳</span> یا
+            <span class="highlight-green">۵</span>
+            بخش‌پذیر هستند.
+          </div>
+        </div>
+
+        <!-- تمرین 24 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">24- مجموعه اعداد:</span><br />
+            لیستی از اعداد را بگیریم و
+            <span class="highlight-blue">مجموعه</span> آن را چاپ کنیم.
+          </div>
+        </div>
+
+        <!-- تمرین 25 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">25- چاپ ستاره متغیر:</span><br />
+            با توجه به اعدادی که وارد می‌شود ستاره چاپ شود.
+          </div>
+        </div>
+
+        <!-- تمرین 26 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">26- کلمات چهارحرفی:</span><br />
+            لیستی از کلمات را بگیرد، لیستی از کلماتی با
+            <span class="highlight-yellow">چهار حرف</span> را نمایش دهد.
+          </div>
+        </div>
+
+        <!-- تمرین 27 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">27- کلمات با "a":</span><br />
+            لیستی از کلمات را بگیرد و آنهایی که با
+            <span class="highlight-green">"a"</span> شروع می‌شوند را بگوید.
+          </div>
+        </div>
+
+        <!-- تمرین 28 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">28- شمارش کلمات:</span><br />
+            لیستی از کلمات را بگیرد و بگوید چند تا کلمه است.
+          </div>
+        </div>
+
+        <!-- تمرین 29 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">29- میانگین حقوق:</span><br />
+            حقوق‌ها را می‌دهد، میانگین حقوق‌ها را می‌گوید.
+          </div>
+        </div>
+
+        <!-- تمرین 30 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">30- حرف اول و آخر یکسان:</span><br />
+            اگر حرف اول و آخر یک <span class="highlight-blue">کلمه</span>
+            یکی باشد، آن حرف را چاپ می‌کند.
+          </div>
+        </div>
+
+        <!-- تمرین 31 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">31- تبدیل دیکشنری:</span><br />
+            کلید و مقدار را می‌گیرد، دیکشنری را تبدیل به تاپل می‌کند، سپس
+            کوچک‌ترین، بزرگ‌ترین و جمع مقادیر را می‌گیرد.
+          </div>
+        </div>
+
+        <!-- تمرین 32 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">32- کلیدهای مشترک:</span><br />
+            دو لیست می‌دهیم، کلیدهایی که در هر دو لیست وجود دارد را بگوید.
+          </div>
+        </div>
+
+        <!-- تمرین 33 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">33- جمع مقادیر مشترک:</span><br />
+            وقتی مشترک را پیدا کرد،
+            <span class="highlight-green">مقدارش</span> را جمع کند.
+          </div>
+        </div>
+
+        <!-- تمرین 34 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">34- دیکشنری لغات:</span><br />
+            یک لیست ده‌تایی از لغات انگلیسی داشته باشد و معنی را بدهد. اگر نبود،
+            بپرسد و اگر کاربر بلد بود به لیست اضافه کند.
+          </div>
+        </div>
+
+        <!-- تمرین 35 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">35- ساخت دیکشنری:</span><br />
+            به مدت چهار بار کلید و مقدار را بگیرد و در دیکشنری چاپش کند.
+          </div>
+        </div>
+
+        <!-- تمرین 36 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">36- تبدیل لیست به تاپل:</span><br />
+            یک لیست را به یک تاپل تبدیل کند.
+          </div>
+        </div>
+
+        <!-- تمرین 37 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">37- رنگ RGB تصادفی:</span><br />
+            تولید رنگ <span class="highlight-green">RGB</span> تصادفی.
+            <div class="code-sample">rgb(123, 45, 67)</div>
+          </div>
+        </div>
+
+        <!-- تمرین 38 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">38- بخش‌پذیری:</span><br />
+            دو عدد بگیرد و ببیند عدد اول به عدد دوم بخش‌پذیر است یا خیر.
+          </div>
+        </div>
+
+        <!-- تمرین 39 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">39- ایندکس دوم:</span><br />
+            پیدا کردن <span class="highlight-blue">ایندکس دوم</span> یک عنصر در
+            لیست.
+          </div>
+        </div>
+
+        <!-- تمرین 40 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">40- دفترچه تلفن:</span><br />
+            پیاده‌سازی یک دفترچه تلفن ساده.
+          </div>
+        </div>
+
+        <!-- تمرین 41 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">41- بازی کلمات:</span><br />
+            دو نفر بازی کنند، هر نفر کلمه‌ای بنویسد و نفر بعدی باید کلمه‌ای
+            بنویسد که اول با آخر کلمه قبلی یکی باشد. کلمه تکراری هم نداریم.
+          </div>
+        </div>
+
+        <!-- تمرین 42 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">42- لیست اعداد تصادفی:</span><br />
+            لیست 10 عضوی از 10 عدد رندوم بین
+            <span class="highlight-yellow">1 تا 100</span>.
+          </div>
+        </div>
+
+        <!-- تمرین 43 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">43- اعداد اعشاری تصادفی:</span><br />
+            مانند برنامه بالا فقط اعداد
+            <span class="highlight-green">اعشاری</span> باشند.
+          </div>
+        </div>
+
+        <!-- تمرین 44 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">44- بازی حدس عدد:</span><br />
+            کامپیوتر عددی بین
+            <span class="highlight-yellow">1 تا 100</span> انتخاب کند، کاربر حدس
+            بزند. هر بار بگوید بزرگتر/کوچکتر است و در آخر تعداد حدس‌ها را بگوید.
+          </div>
+        </div>
+
+        <!-- تمرین 45 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">45- سنگ کاغذ قیچی:</span><br />
+            کامپیوتر با کاربر
+            <span class="highlight-blue">سنگ کاغذ قیچی</span> بازی کند.
+          </div>
+        </div>
+
+        <!-- تمرین 46 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">46- ست اعداد:</span><br />
+            10 عدد از ورودی بگیرد و در
+            <span class="highlight-green">ست</span> ذخیره کند.
+          </div>
+        </div>
+
+        <!-- تمرین 47 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">47- ست تصادفی:</span><br />
+            ست ایجاد کند از ده عدد رندوم بین
+            <span class="highlight-yellow">1 تا 100</span>.
+          </div>
+        </div>
+
+        <!-- تمرین 48 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">48- عملیات مجموعه:</span><br />
+            کاربر دو مجموعه وارد کند،
+            <span class="highlight-blue">اشتراک</span>،
+            <span class="highlight-blue">اجتماع</span> و
+            <span class="highlight-blue">تفاضل</span> آنها را بدست آورد.
+          </div>
+        </div>
+
+        <!-- تمرین 49 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">49- محاسبه قبض آب:</span><br />
+            بر اساس قواعد:<br />
+            • کمتر از 21m³: معاف<br />
+            • 21-41m³: جریمه 5%<br />
+            • بیشتر از 41m³: جریمه 10%<br />
+            • هر m³: 111 تومان
+          </div>
+        </div>
+
+        <!-- تمرین 50 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">50- سود بستنی‌فروشی:</span><br />
+            هزینه نان + هزینه بستنی + قیمت فروش + تعداد فروش =
+            <span class="highlight-green">سود روزانه</span>.
+          </div>
+        </div>
+
+        <!-- تمرین 51 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">51- تبدیل ثانیه به ساعت:</span><br />
+            ثانیه را تبدیل کند به <span class="highlight-blue">ساعت</span>.
+          </div>
+        </div>
+
+        <!-- تمرین 52 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">52- شمارش کاراکترهای فایل:</span><br />
+            فایلی را بخواند و بگوید چند
+            <span class="highlight-green">کاراکتر</span> دارد.
+          </div>
+        </div>
+
+        <!-- تمرین 53 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">53- شمارش کلمات فایل:</span><br />
+            فایلی را بخواند و بگوید چند
+            <span class="highlight-green">کلمه</span> دارد.
+          </div>
+        </div>
+
+        <!-- تمرین 54 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">54- شمارش حروف کوچک:</span><br />
+            تعداد حروف <span class="highlight-blue">کوچک</span> را بشمارد.
+          </div>
+        </div>
+
+        <!-- تمرین 55 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">55- تحلیل کامل فایل:</span><br />
+            فایلی را بخواند و بشمارد:<br />
+            • حروف کوچک<br />• حروف بزرگ<br />• اعداد<br />• کاراکترهای خاص<br />•
+            فاصله
+          </div>
+        </div>
+
+        <!-- تمرین 56 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">56- ذخیره کلمات در فایل:</span><br />
+            <span class="highlight-yellow">10 کلمه</span> بگیرد و داخل فایل
+            ذخیره کند.
+          </div>
+        </div>
+
+        <!-- تمرین 57 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">57- شمارش حروف صدادار فایل:</span><br />
+            فایل متنی را بخواند و تعداد
+            <span class="highlight-green">حروف صدادار</span> را بگوید.
+          </div>
+        </div>
+
+        <!-- تمرین 58 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">58- نمایش حروف صدادار:</span><br />
+            همان 57 اما نمایش دهد.
+          </div>
+        </div>
+
+        <!-- تمرین 59 -->
+        <div class="exercise-card">
+          <div class="exercise-content">
+            <span class="highlight-red">59- کلمات شروع و پایان با "a":</span
+            ><br />
+            فایل متنی را بخواند و همه کلماتی که با
+            <span class="highlight-green">"a"</span> شروع و تمام می‌شوند را
+            نمایش دهد.
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <p>تمرینات برنامه‌نویسی - طراحی شده با ماتریکس در پس‌زمینه</p>
+        <p>مجموع: ۵۹ تمرین | تاریخ: 1404/11/4</p>
+        <p>تهیه و تنظیم : حاج کامیار</p>
+        <button >  !... اینو میگم  <p>mobina</p></button>
+      </div>
+    </div>
+
+    <div class="page-indicator">تمرینات: ۱-۵۹</div>
+
+    <script>
+      const matrixContainer = document.getElementById("matrix-container");
+      const matrixChars = "anibom";
+      const repeatCount = 20;
+
+      const config = {
+        columns: 80,
+        fontSize: 16,
+        speedMin: 10,
+        speedMax: 15,
+      };
+
+      function initMatrix() {
+        matrixContainer.innerHTML = "";
+        const columnSpacing = 100 / config.columns;
+
+        for (let i = 0; i < config.columns; i++) {
+          createMatrixStream(i * columnSpacing);
+        }
+      }
+
+      function createMatrixStream(leftPercent) {
+        const stream = document.createElement("div");
+        stream.className = "matrix-stream";
+        stream.style.left = `${leftPercent}%`;
+        stream.style.fontSize = `${config.fontSize}px`;
+
+        const speed =
+          Math.random() * (config.speedMax - config.speedMin) + config.speedMin;
+        stream.style.animationDuration = `${speed}s`;
+        stream.style.animationDelay = `${Math.random() * 5}s`;
+
+        let content = "";
+        for (let j = 0; j < repeatCount; j++) {
+          for (let k = 0; k < matrixChars.length; k++) {
+            content += matrixChars[k] + "<br>";
+          }
+        }
+
+        stream.innerHTML = content;
+        matrixContainer.appendChild(stream);
+
+        setTimeout(
+          () => {
+            if (stream.parentNode) {
+              stream.parentNode.removeChild(stream);
+            }
+            createMatrixStream(leftPercent);
+          },
+          speed * 1000 + 2000,
+        );
+      }
+
+      window.addEventListener("load", function () {
+        initMatrix();
+
+        window.addEventListener("resize", function () {
+          initMatrix();
+        });
+
+        document.addEventListener("contextmenu", function (e) {
+          e.preventDefault();
+        });
+      });
+    </script>
+  </body>
+</html>
