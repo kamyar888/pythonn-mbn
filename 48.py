@@ -1,0 +1,5 @@
+list1=input("enter the set 1 = ").split()
+list2=input("enter the set 2 = ").split()
+a=set(list1)
+b=set(list2)
+print( "in ejtema do majmoe hastand ",a.union() ,"in eshterakat do majmoe hastand ",a.intersection(),"in tafazol do majmoe hastand ",a.difference() )
